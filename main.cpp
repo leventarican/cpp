@@ -17,7 +17,7 @@ Zahlen, Variable, ...
     - es wird zwischne Groß- und Kleinschreibung unterschieden
     - nicht erlaubt sind: Schlüsselwörter in c++, Umlaute,
 */
-void block1() {
+void section1() {
     // Deklaration: Wie machen die Variablen dem Programm bekannt.
     int _am0unt;
     double price;
@@ -37,7 +37,7 @@ Operatoren
 - wenn bei der Deklaration einer Variable der Wert bekannt ist, 
 wird diese Zuweisung auch Initialisierung genannt.
 */
-void block2() {
+void section2() {
     int amountApple = 2, amountPear = 4;
     double price_apple = 1.45, price_pear = 0.85;
     double sum, average, percentage, difference;
@@ -60,7 +60,7 @@ Formatieren mit Manipulatoren
 Wirkt sich maximal für den restlichen Verlauf des Programms.
 - setpresiction: Nach der Angabe von fixed, kann damit die Anzahl der Stellenzahl gerundet bestimmt werden.
 */
-void block3() {
+void section3() {
     double pi = 3.141;
     cout << pi << endl;
     cout << setw(8) << pi << endl;
@@ -83,7 +83,7 @@ Zuweisungen kürzer schreiben
 - Dekrement Operator -- 
 - Zuweisungsoperatoren: +=, -=, *=, /=
 */
-void block4() {
+void section4() {
     int amount = 2; cout << amount << endl;
     amount += 5; cout << amount << endl;
     amount -= 5; cout << amount << endl;
@@ -104,7 +104,7 @@ Speicherung von Zahlen
 - Datentypen für Fließkomma Zahlen: float, double, long double
 - cfloat
 */
-void block5() {
+void section5() {
     cout << "char " << sizeof(char) << " byte von " << CHAR_MIN << " bis " << CHAR_MAX << endl;
     cout << "unsigned char " << sizeof(unsigned char) << " byte von 0 bis " << UCHAR_MAX << endl;
     cout << "short " << sizeof(short) << " byte von " << SHRT_MIN << " bis " << SHRT_MAX << endl;
@@ -120,12 +120,13 @@ void block5() {
     int 4 byte von -2147483648 bis 2147483647
     unsigned int 4 byte von 0 bis 4294967295
     long 4 byte von -2147483648 bis 2147483647
-    unsigned long 4 byte von 0 bis 4294967295   // je nach Compilter kann long auch 8 Byte haben.
+    unsigned long 4 byte von 0 bis 4294967295   // je nach compiler, kann long auch 8 Byte haben.
     */
 
     cout << "float " << sizeof(float) << " byte von " << FLT_MIN << " bis " << FLT_MAX << endl;
     cout << "double " << sizeof(double) << " byte von " << DBL_MIN << " bis " << DBL_MAX << endl;
     cout << "long double " << sizeof(long double) << " byte von " << LDBL_MIN << " bis " << LDBL_MAX << endl;
+
     cout << fixed << setprecision(30);
     cout << "1/7 in float: " << 1.0f / 7 << endl;
     cout << "1/7 in double: " << 1.0 / 7 << endl;
@@ -142,7 +143,7 @@ void block5() {
 Feste Werte in Konstanten speichern
 - const: Definition einer Konstante.
 */
-void block6() {
+void section6() {
     const double PI = 3.1415;
     // PI = 4.2;
     double radius = 2.1;
@@ -161,7 +162,7 @@ Konstanten in Enumeration.
 - falls kein initial Wert angegeben wird, wird von 0,1,2 ausgegangen.
 - ansonsten vom letzten definierten Wert hochzählend. 
 */
-void block7() {
+void section7() {
     enum color {RED, GREEN, BLUE=7, ALPHA}; // 0, 1, 7, 8
     color co;
     co = GREEN;
@@ -179,7 +180,7 @@ Verzweigungen
 - Bedingung: in runden Klammern steht die Bedingung
 - Wahrheitswert: das Ergebnis der Bedigung ist ein Wahrheitswert
 */
-void block8() {
+void section8() {
     double pi = 3.14;
     int radius = 7;
 
@@ -269,10 +270,115 @@ void block8() {
     cout << "\n\n" <<endl;
 }
 
-void blockn() {
+/*
+Schleifen: for, do-while, while
+*/
+void section9() {
+    // for Schleife (kopfgesteuerte Schleife)
+    for(double d=2.0; d<3.1; d+=0.2) {
+        cout << d << endl;
+    }
+
+    // bereichsbasierte for Schleife (range-based for-loop)
+    // range-based 'for' loops are not allowed in C++98 mode
+    // for(int number:{10, 25, 15}) {
+    //     cout << number << endl;
+    // }
+
+    // do-while Schleife wird mindestens einmal aufgerufen
+    double pi = 3.14;
+    do {
+        cout << "pi is between 1-3." << endl;
+        break;
+    } while(pi < 1 || pi > 3);
+
+    // while Schleife (kopfgesteuert)
+    int c = 1;
+    while(c < 4) {
+        c++;
+        if(c==2 || c==4) continue;
+        cout << c << endl;
+    }
+
+    // geschachtelte Schleifen
+    for(int i=1; i<=2; i++) {
+        for(int j=1; j<=3; j++) {
+            cout << i << " - " << j << endl;
+        }
+    }
+
+    cout << "\n\n" <<endl;
+}
+
+namespace section10 {
+    // Funktionen und Parameter (übergeben)
+    int addition(int a, int b) {
+        return a + b;
+    }
+
+    /*
+    Referenzen
+    - ermöglicht den Zugriff einer Variable unter einem anderen Namen --> veränderliche Referenz
+    - den Wert zu ändern ist bei konstanten Referenzen nicht möglich
+    - die Nutzung von Referenz spart Ressourcen
+    */
+    void ref() {
+        double pi = 3.14;
+        double &piRef1 = pi;
+        cout << "pi: " << piRef1 << endl;
+
+        double &piRef2 = piRef1;
+        cout << "pi: " << piRef2 << endl;
+
+        const double &piRef3 = pi;   // --> konstante Referenz
+        cout << "pi: " << piRef3 << endl;
+    }
+
+    int additionEconomic(int &a, int &b) {
+        return a + b;
+    }
+
+    int additionOptimized(const int &a, const int &b) {
+        return a + b;
+    }
+
+    /* 
+    Rückgabewert einer Funktion 
+    - das Schlüsselwort void for dem Namen der Funktion sagt aus, dass nichts zurückgeliefert wird.
+    - an der aufrufenden Stelle, kann je nach Rückgabewert entschieden werden, was damit geschieht.
+    - das Schlüsselwort return ist für die Rückgabe des Wertes zuständig. Zugleich, beendet es die Funktion.
+
+    Anmerkung: 
+    Die Hauptfunktion main liefert auch einen int Rückgabewert, jedoch muss in C++ nicht return aufrufen.
+    */
+
+    /*
+    Deklaration einer Funktion
+    - die main funktion muss unten stehen, sonst kennt es die Funktion unterhalb dessen nicht
+    - was man machen kann ist, dass man die Funktion überhalb von main erst mal deklariert.
+    - die Deklaration erfordert keine 
+    */
+    void justDeclaration();
+
+    void main() {
+        cout << "section_a" << endl;
+        cout << addition(2, 5) << endl;
+        ref();
+        int a = 2, b = 5;
+        cout << additionEconomic(a, b) << endl; // Aufruf mit Werten nicht möglich! Werte können geändert werden.
+        cout << additionOptimized(2, 5) << endl;    // Werte nicht mehr änderbar --> klar.
+        justDeclaration();
+    }
+
+    void justDeclaration() {
+        cout << "main can see this function and also call it!" << endl;
+    }
+}
+
+void sectionn() {
     cout << "\n\n" <<endl;
 }
 
 int main() {
-    block8();
+    section10::main();
 }
