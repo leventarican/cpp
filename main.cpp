@@ -2,6 +2,8 @@
 #include <iomanip>
 #include <climits>
 #include <cfloat>
+#include <cstdarg>
+#include <stdio.h>  // printf
 
 using namespace std;
 
@@ -342,6 +344,68 @@ namespace section10 {
         return a + b;
     }
 
+    /*
+    Parameter können auch standartwerte haben. Damit ist es möglich, 
+    die Funktion auch ohne Parameter aufzurufen.
+    Das geht allerdings nur bei konstanten Referenzen / Variablen.
+    */
+    int additionDefault(const int &a = 0, const int &b = 0) {
+        return a + b;
+    }
+
+    /*
+    Bei einer variadischen Funktion kann man eine beliebige Menge von Parametern übergeben.
+    Am Ende der Parameterliste wird eine sog. Ellipse (...) angegeben.
+
+    Hierzu müssen wir den Header cstdarg inkludieren.
+    Hier sind die Makros va_list, ... definiert.
+    */
+    int additionVariadic(const int &number, ...) {
+        int sum = 0;
+        va_list list;   // damit greifen wir auf die übergebenen Werte. Ist eigentlich ein Zeiger.
+        va_start(list, number); // quasi die Initialisierung
+        for(int i=1; i<=number; i++)
+            sum += va_arg(list, int);   // das Makro va_arg liefert den nächsten Wert in der Schleife
+        va_end(list);    // wir schließen den Zugriff auf die übergebenen Werte
+        return sum;
+    }
+
+    void thisFunctionCountsItsCall() {
+        static int counter = 1; // statische Variablen behalten ihren Wert über die gesamte Laufzeit.
+        cout << counter << " times thisFunctionCountsItsCall() was called" << endl;
+        counter++;
+    }
+
+    /*
+    Functionen können auch mehrmals mit dem selben Namen definiert werden.
+    Vorraussetzung ist, dass sie sich in der Parameterliste unterscheiden.
+    --> Man spricht von Überladene Functionen.
+    */
+    int addition(int a, int b, int c) {
+        return a + b + c;
+    }
+
+    /*
+    Beispiel für eine rekursive Function. Sie ruft sich selber auf.
+    */
+    void halve(int &input, int &stop) {
+        input = input / 2;
+        printf("halve() > %d\n", input);
+        if(input > stop)
+            halve(input, stop);
+    }
+
+    /*
+    Funktionen als Parameter -> Funktionszeiger
+    Eine Funktion wird während der Laufzeit in den Speicher geladen - wie eine Variable.
+    Als Parameter einer Funktion können wir einen Funktionszeiger definieren,
+    der auf die Adresse und damit auf die Funktion zeigt. 
+    */
+    int quad(int a) {
+        return a * a;
+    }
+    
+
     /* 
     Rückgabewert einer Funktion 
     - das Schlüsselwort void for dem Namen der Funktion sagt aus, dass nichts zurückgeliefert wird.
@@ -356,22 +420,29 @@ namespace section10 {
     Deklaration einer Funktion
     - die main funktion muss unten stehen, sonst kennt es die Funktion unterhalb dessen nicht
     - was man machen kann ist, dass man die Funktion überhalb von main erst mal deklariert.
-    - die Deklaration erfordert keine 
+    - die Deklaration erfordert keinen Namen für die Parameter
     */
-    void justDeclaration();
+    void justDeclaration(const int&);
 
     void main() {
-        cout << "section_a" << endl;
+        cout << "\nsection_a" << endl;
         cout << addition(2, 5) << endl;
         ref();
         int a = 2, b = 5;
-        cout << additionEconomic(a, b) << endl; // Aufruf mit Werten nicht möglich! Werte können geändert werden.
-        cout << additionOptimized(2, 5) << endl;    // Werte nicht mehr änderbar --> klar.
-        justDeclaration();
+        cout << "additionEconomic - " << additionEconomic(a, b) << endl;     // Aufruf mit Werten nicht möglich! Werte können geändert werden.
+        cout << "additionOptimized - " << additionOptimized(2, 5) << endl;    // Werte nicht mehr änderbar --> klar.
+        cout << "additionDefault - " << additionDefault() << endl;
+        printf("additionVariadic - %d\n", additionVariadic(2, 2, 5));
+        justDeclaration(7);
+        thisFunctionCountsItsCall();
+        thisFunctionCountsItsCall();
+        cout << addition(2, 5, 1) << endl;
+        a = 64, b = 1;
+        halve(a, b);
     }
 
-    void justDeclaration() {
-        cout << "main can see this function and also call it!" << endl;
+    void justDeclaration(const int &a) {
+        cout << "main can see this function and also call it. Your param: " << a << endl;
     }
 }
 
