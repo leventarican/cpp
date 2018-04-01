@@ -4,6 +4,9 @@
 #include <cfloat>
 #include <cstdarg>
 #include <stdio.h>  // printf
+#include <array>
+#include <memory>
+#include <vector>
 
 using namespace std;
 
@@ -404,7 +407,12 @@ namespace section10 {
     int quad(int a) {
         return a * a;
     }
-    
+    int powerThree(int a) {
+        return a * a * a;
+    }
+    int thisFunctionHasOtherFunctionAsParameter(const int &x, int fkt(int a)) {
+        cout << fkt(x) << endl;
+    }
 
     /* 
     Rückgabewert einer Funktion 
@@ -439,10 +447,234 @@ namespace section10 {
         cout << addition(2, 5, 1) << endl;
         a = 64, b = 1;
         halve(a, b);
+        thisFunctionHasOtherFunctionAsParameter(2, quad);   // Funktion quad als Parameter
+        thisFunctionHasOtherFunctionAsParameter(2, powerThree);
     }
 
     void justDeclaration(const int &a) {
         cout << "main can see this function and also call it. Your param: " << a << endl;
+    }
+}
+
+/*
+Hier geht es um Felder.
+In Feldern können Daten desselben Datentyps gespeichert werden.
+*/
+namespace section11 {
+
+    void einfacheStatischeFelder() {
+        double values[3];   // statisches Feld mit drei Elementen des Datentyps double.
+        values[0] = 0.42;
+        values[1] = 3.14;
+        values[2] = 14.53;
+        for(int i=0; i<3; i++)
+            printf("values[] = %.1lf\n", values[i]);
+        for(const double &value : values)
+            printf("values[] = %.2lf\n", value);
+    }
+
+    // intelligente statische Felder werden mit dem Klassentemplate array erstellt.
+    // dazu inkludieren wir array
+    void intelligenteStatischeFelder() {
+        array<double, 3> values;    // die Werte können auch direkt mit {} initialisiert werden.
+        values.at(0) = 0.42;    // mit dem Punkt Operator greifen wir auf die Methode at zu.
+        values.at(1) = 3.1415;
+        values.at(2) = 14.53;
+        // kann sein das vs code hier 'too many initializer values' sagt. Es lässt sich trotzdem kompilieren. 
+        array<double,3> values1 = {0.42, 3.1415, 14.53}; 
+        // hier sagt vs code nichts.
+        array<double,3> values2{ {0.42, 3.1415, 14.53} };
+
+        // size() liefert Datentyp unsigned int. Daher nehmen wir zum Vergleich auch unsigned int.
+        for(unsigned int i=0; i<values.size(); i++)
+            printf("arrays<> values = %.2lf\n", values.at(i));
+        for(const double &value : values1)
+            printf("arrays<> values = %.4lf\n", value);
+    }
+
+    void change(double *pvalue) {
+        *pvalue = *pvalue + 0.01;
+    }
+
+    // Zeiger werden eher selten erzeugt, mehr nutzen und deferenzieren von vorhandenen Zeigern.
+    void einfacheDynamischeFelder() {
+        // zur Erstellung von einfachen dynamischen Felder benötigen wir einen Zeiger.
+        // Unterscheidung zwischen einfacher und dynamischer Zeiger.
+        double value = 0.42;
+        double *valuePointer;   // Zeiger: wir definieren eine Variabe mit dem Datentyp double
+        // der Variable weisen wir die Adresse einer Variable des Datentyps double zu
+        // mit dem Operator & ermitteln wir die Adresse einer Variable im Speicher
+        valuePointer = &value;
+        cout << *valuePointer << endl;
+
+        // Dereferenzierung eines Zeigers mit * 
+        // Dereferenzierung bedeuetet: Zugriff auf den Wert, auf den der Zeiger zeigt.
+        *valuePointer = 3.14;
+        cout << value << endl;
+
+        change(&value);
+        cout << value << endl;
+
+        change(valuePointer);
+        cout << value << endl;
+    }
+
+    void operatorenNewDelete() {
+        // mit new kann man Speicherplatz anfordern
+        // die Adresse des Speicherplatzes wird einem Zeiger zugewiesen
+        // mit delete wird der Speicher wieder freigegeben
+        double *pi = new double;
+        *pi = 3.1415;
+        cout << *pi << endl;
+        delete pi;
+
+        int *pfield, number = 3;
+        pfield = new int[number];    // Speicherplatz für ein einfaches dynamisches Feld von int Variablen anfordern
+        for(int i=0; i<number; i++) {
+            pfield[i] = 10 * i;
+            cout << pfield[i] << " ";
+        }
+        cout << endl; delete[] pfield;
+    }
+
+    // smart pointer
+    // automatische Verwaltung der Variablen / Objekte. Damit selbstständige Freigabe des Speicherplatzes.
+    // wir inkludieren dazu <memory>
+    void intelligenterEindeutigerZeiger() {
+        // intelligenter Zeiger auf eine Variable
+        unique_ptr<double> pi(new double);
+        *pi = 3.14159;
+        cout << *pi << endl;
+
+        // intelligenter Zeiger auf einfaches dynamisches int-Feld
+        int number = 7;
+        unique_ptr<int[]> pfield(new int[number]);
+        for(int i=0; i<number; i++) {
+            pfield[i] = 10 * i;
+            cout << pfield[i] << " ";
+        }
+        cout << endl;   // kein delete erforderlich
+    }
+
+    // mehrere intelligente Zeiger können auf eine Variable / Objekt zeigen
+    // der Speicher wird automatisch freigegeben, wenn der letzte Zeiger nicht mehr darauf verweist.
+    void sharedPointer() {
+        shared_ptr<double> p1(new double);
+        *p1 = 3.141592;
+
+        shared_ptr<double> p2(p1);
+        printf("%.5lf\n", *p1);
+        printf("%.5lf\n", *p2);
+    }
+
+    // mit dem Klassentemplate vector aus der Container Bibliothek werden diese erzeugt
+    // wir inkludieren dazu <vector>
+    void intelligenteDynamischeFelder() {
+        vector<int> values;
+        values.resize(20);
+        
+        for(unsigned int i=0; i<values.size(); i++)
+            values.at(i) = 10 * i;
+        values.push_back(300);  // ohne ein resize zu machen, vergrößern wir das Feld
+        cout << values.size() << endl;
+        values.resize(23);
+        values.at(21) = 301;
+        values.at(22) = 302;
+        for(const int &value : values)
+            cout << value << " ";
+        cout << endl;
+    }
+
+    void outputArray(const array<int, 2> &values) {
+        for(const int &value : values)
+            cout << value << " ";
+        cout << endl;
+    }
+
+    void outputVector(const vector<int> &values) {
+        for(const int &value : values)
+            cout << value << " ";
+        cout << endl;
+    }
+
+    // als Kopie des Feld | als veränderliche Referenz | konstante Referenz auf das Feld
+    void felderAlsParameter() {
+        array<int,2> v1 = { 1, 2 };
+        vector<int> v2 = { 1, 2, 3, 5, 8 };
+        outputArray(v1);
+        outputVector(v2);
+    }
+
+    // Beispiel für ein zweidimensionales Feld
+    void mehrdimensionalesFeldMitFesterGroesse() {
+        cout << endl; array<array<int,7>,3> pField;
+        for(unsigned int i=0; i<pField.size(); i++)
+            for(unsigned int k=0; k<pField.at(i).size(); k++)
+                pField.at(i).at(k) = 10 + i*10 + k;
+        for(array<int,7> &row : pField) {
+            for(int &value : row)
+                cout << value << " ";
+            cout << endl;
+        }
+    }
+
+    void mehrdimensionalesFeldMitVariablerGroesse() {
+        cout << endl; 
+        vector<vector<int>> pField;   // vor C++11 musste man vector<vector<int> > schreiben (Leezeichen!)
+        int rowNumber = 4;
+        int columnNumber = 3;
+
+        pField.resize(rowNumber);
+        for(unsigned int i=0; i<pField.size(); i++)
+            pField.at(i).resize(columnNumber);
+
+        for(unsigned int i=0; i<pField.size(); i++)
+            for(unsigned int k=0; k<pField.at(i).size(); k++)
+                pField.at(i).at(k) = 10 + i*10 + k;
+        for(vector<int> &row : pField) {
+            for(int &value : row)
+                cout << value << " ";
+            cout << endl;
+        }
+    }
+    
+    void main() {
+        einfacheStatischeFelder();
+        intelligenteStatischeFelder();
+        einfacheDynamischeFelder();
+        operatorenNewDelete();
+        intelligenterEindeutigerZeiger();
+        sharedPointer();
+        intelligenteDynamischeFelder();
+        felderAlsParameter();
+        mehrdimensionalesFeldMitFesterGroesse();
+        mehrdimensionalesFeldMitVariablerGroesse();
+    }
+}
+
+/*
+Fehlerbehanldung / Exception Handling
+Während der Laufzeit können damit Fehler abgefangen werden.
+*/
+namespace section12 {
+
+    // intelligente statische Felder werden mit dem Klassentemplate array erstellt.
+    void ausnahmeBehandlung() {
+        array<double,3> values{ {0.42, 3.1415, 14.53} };
+
+        try {
+            printf("arrays<> values = %.4lf\n", values[5]);
+            // nicht reservierter Speicherbereich. D.h. der Inhalt wird lediglich ausgegeben.
+            printf("arrays<> values = %.4lf\n", values.at(5));
+        } catch(exception &e) {
+            cout << "section 12 catched: " << e.what() << endl;
+        }
+
+        printf("after exception handling. We are finished.");
+    }
+    
+    void main() {
+        ausnahmeBehandlung();
     }
 }
 
@@ -451,5 +683,7 @@ void sectionn() {
 }
 
 int main() {
-    section10::main();
+    // section10::main();
+    section11::main();
+    // section12::main();
 }
