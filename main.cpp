@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstring>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -749,11 +750,116 @@ namespace section13 {
         string line_80 = string(80, '#');
         cout << line_80 << endl;
     }
+
+    void stringsAendern() {
+        string sentence = "cpp in a file";
+        cout << sentence << endl;
+
+        sentence.at(0) = 'C';
+        sentence.at(1) = '+';
+        sentence.at(2) = '+';
+        // printf isnt type sage, it supports only a C-style string
+        printf("%s\n", sentence.c_str());
+
+        sentence.insert(13, " github");
+        cout << sentence << endl;
+
+        sentence.erase(13, 7);
+        cout << sentence << endl;
+
+        sentence.replace(0, 3, "cpp");
+        cout << sentence << endl;
+
+        sentence.push_back('.'); // am Ende ein Zeichen hinzufügen
+        cout << sentence << endl;
+
+        sentence.pop_back(); // am Ende ein Zeichen entfernen
+        cout << sentence << endl;
+    }
+
+    void stringsVergleichen(){
+        string sentence = "c++ in a file - github";
+        cout << sentence << endl;
+
+        cout << sentence.substr(0, 3) << endl;
+
+        if("abcdef" < "abcdeg") // alphabetischer Vergleich
+            cout << "abcdef <" << endl;
+        if("abcdeg" > "abcdef")
+            cout << "abcdeg >" << endl;
+
+        string::size_type pos;  // Datentyp size_type. Ist in string definiert.
+        pos = sentence.find("github");
+        if(pos == string::npos) // npos ist in string definiert. Ein statisches Element.
+            cout << "'github' not found" << endl;
+        else 
+            cout << "'github' found at position = " << pos << endl;
+    }
+
+    // include <sstream>
+    void zahlenInStringsUmwandeln() {
+        string label = "PI ";
+        double pi = 3.1415;
+        string output;
+
+        ostringstream outputStream;   // ostringstream ist eine Klasse
+        outputStream.str("");   // wir leeren das Objekt
+        outputStream << label << pi;    // Operator leitet << den Stream nach Links
+        output = outputStream.str();
+        cout << output << endl;
+
+        // to_string bringt bei manchen Compilern ein Fehler
+    }
     
     void main() {
         einfacheZeichen();
         einfacheZeichenketten();
         intelligenteZeichenketten();
+        stringsAendern();
+        stringsVergleichen();
+        zahlenInStringsUmwandeln();
+    }
+}
+
+/*
+Daten in Strukturen zusammenfassen.
+- Schlüsselwort struct
+- Strukturen sind sozusagen eine vereinfachte Form von Klasse.
+- mit einer Struktur definieren wir einen eigenen Datentyp
+*/
+namespace section14 {
+    struct carTyp {
+        int numberOfWheels;
+        double weightInTon;
+        string brand;
+    };
+
+    typedef struct cTyp {
+        int numberOfWheels;
+        double weightInTon;
+        string brand;
+    } car;  // Schlüsselwort typedef wird als Alias genutzt
+
+    void main() {
+        struct carTyp pOne;
+        pOne.numberOfWheels = 4;
+        pOne.weightInTon = 1.549;
+        pOne.brand = "future";
+        printf("wheels=%i weight=%lf brand=%s\n", pOne.numberOfWheels, pOne.weightInTon, pOne.brand.c_str());
+
+        car one, two;
+        one = {2, 0.99, "bike"};
+        two = one;
+        printf("wheels=%i weight=%lf brand=%s\n", one.numberOfWheels, one.weightInTon, one.brand.c_str());
+        printf("wheels=%i weight=%lf brand=%s\n", two.numberOfWheels, two.weightInTon, two.brand.c_str());
+        
+        car &three = one;
+        three.numberOfWheels = 3;
+        printf("wheels=%i weight=%lf brand=%s\n", three.numberOfWheels, three.weightInTon, three.brand.c_str());
+
+        car *four = &one;
+        cout << (*four).brand << endl;
+        cout << four->brand << endl;
     }
 }
 
@@ -765,5 +871,6 @@ int main() {
     // section10::main();
     // section11::main();
     // section12::main();
-    section13::main();
+    // section13::main();
+    section14::main();
 }
