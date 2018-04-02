@@ -7,6 +7,8 @@
 #include <array>
 #include <memory>
 #include <vector>
+#include <cstring>
+#include <string>
 
 using namespace std;
 
@@ -678,12 +680,90 @@ namespace section12 {
     }
 }
 
+/*
+Zeichen und Text
+Unterscheidung zwischen einfachen nud intelligenten Zeichenketten.
+*/
+namespace section13 {
+    void einfacheZeichen() {
+        char character;
+        character = 'A';
+        cout << character << endl;
+        character = 65;
+        cout << character << endl;
+
+        for(char c=65; c<=90; c++)  // Sonderzeichen=0 bis 31; Kleinbuchstaben=97 bis 122
+            cout << c;
+        cout << endl;
+    }
+
+    // inlcude <cstring>
+    void einfacheZeichenketten() {
+        char pOne[10];
+        pOne[0] = 'H';
+        pOne[1] = 'a';
+        pOne[2] = 'l';
+        pOne[3] = 'l';
+        pOne[4] = 'o';
+        pOne[5] = '\0'; // signalisiert das Ende der Zeichenkette
+        cout << pOne << endl;
+
+        // Zeichenkette anhängen; \0 wird automatisch an das Ende angehängt.
+        cout << strcat(pOne, " World") << endl;
+        cout << strlen(pOne) << endl;   // Länge der Zeichenkette
+
+        for(int i=0; i<=10; i++)
+            cout << (int)pOne[i] << " ";    // es erfolgt ein Cast: Umwandlung in einen anderne Datentyp.
+        cout << endl;
+
+        cout << strcpy(pOne, "C++") << endl;
+
+        // alphabetischer Vergleich; Bspw. < 0 als Return wenn erste Zeichenkette vor der zweiten Zeichenkette liegt.
+        if(!strcmp(pOne, "C++"))
+            cout << "identisch" << endl;
+        
+        char pTwo[] = "github";
+        cout << pTwo << endl;
+
+        if(strcmp(pOne, pTwo) < 0)
+            printf("%s alphabetisch vor %s", pOne, pTwo);
+    }
+
+    // include <string>
+    void intelligenteZeichenketten() {
+        string sentence;
+        sentence = "C++ in";
+        sentence += " a file.";
+        cout << sentence << endl;
+
+        for(unsigned int i=0; i<sentence.length(); i++)
+            cout << sentence.at(i) << " ";
+        cout << endl;
+
+        for(const char &c : sentence)
+            cout << c << " ";
+        cout << endl;
+
+        cout << sentence.c_str() << endl;   // Umwandlung in einfache Zeichenkette
+
+        string line_80 = string(80, '#');
+        cout << line_80 << endl;
+    }
+    
+    void main() {
+        einfacheZeichen();
+        einfacheZeichenketten();
+        intelligenteZeichenketten();
+    }
+}
+
 void sectionn() {
     cout << "\n\n" <<endl;
 }
 
 int main() {
     // section10::main();
-    section11::main();
+    // section11::main();
     // section12::main();
+    section13::main();
 }
