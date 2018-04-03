@@ -10,6 +10,9 @@
 #include <cstring>
 #include <string>
 #include <sstream>
+#include <ctime>
+#include <cstdlib>
+#include <cmath>
 
 using namespace std;
 
@@ -840,6 +843,19 @@ namespace section14 {
         string brand;
     } car;  // Schlüsselwort typedef wird als Alias genutzt
 
+    void console() {
+        string input;
+        int ps;
+        istringstream inputStream;
+        cout << "go for input: ";
+        getline(cin, input);
+        inputStream.str(input);
+        inputStream >> ps;
+        inputStream.clear();
+
+        cout << "you input> " << ps << endl;
+    }
+
     void main() {
         struct carTyp pOne;
         pOne.numberOfWheels = 4;
@@ -860,6 +876,170 @@ namespace section14 {
         car *four = &one;
         cout << (*four).brand << endl;
         cout << four->brand << endl;
+
+        // console();
+    }
+}
+
+/*
+Datum und Uhrzeit
+- ctime Bibliothen wird verwendet
+- chrono Bibliothek wird nicht behandelt
+*/
+namespace section15 {
+    void dateAndTime() {
+        time_t now; // Datentyp time_t
+        // Datentyp struct tm hat u.a. die Komponenten tm_mday (int Wert für Tag im Monat), tm_hour (int für Stunde)
+        struct tm nowLocal;
+
+        now = time(0);
+        cout << "in s seit 1970: " << now << endl;
+
+        nowLocal = *localtime(&now);
+
+        cout << setfill('0');
+        cout << setw(2) << nowLocal.tm_mday << ".";
+        cout << setw(2) << nowLocal.tm_mon + 1 << ".";
+        cout << nowLocal.tm_year + 1900 << " ";
+        cout << setw(2) << nowLocal.tm_hour << ":";
+        cout << setw(2) << nowLocal.tm_min << ":";
+        cout << setw(2) << nowLocal.tm_sec << endl;
+
+        cout << "day in year: " << nowLocal.tm_yday + 1 << endl;
+
+        array<string, 7> dayField = {"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"};
+        cout << dayField.at(nowLocal.tm_wday) << endl;
+    }
+
+    void timer() {
+        clock_t clockStart, clockEnd;   // Prozessortakte seit Programmstart
+        int value = 1;
+        double number = 700e6, diff, cycle; // 7.000.000 mal soll die Schleife durchlaufen
+
+        for(int i=1; i<=5; i++) {
+            clockStart = clock();
+            for(int j=1; j<number; j++)
+                value = -value; // künstliche Last erzeugen = -1 * value
+            clockEnd = clock();
+            // mit 1.0 * wandeln wir in double um
+            diff = 1.0 * (clockEnd - clockStart) / CLOCKS_PER_SEC;  // Anzahl der Prozessortakte pro Sekunde
+            cycle = diff / number * 1e9;    // 1s = 1.000.000.000 Nanosekunden
+
+            cout << "total = " << diff << " s." << endl;
+            cout << "cycle = " << cycle << " ns." << endl;
+        }
+    }
+
+    void output(time_t *ttp) {
+        struct tm stx = *localtime(ttp);
+        cout << setfill('0');
+        cout << setw(2) << stx.tm_mday << ".";
+        cout << setw(2) << stx.tm_mon + 1 << ".";
+        cout << stx.tm_year + 1900 << " ";
+        cout << setw(2) << stx.tm_hour << ":";
+        cout << setw(2) << stx.tm_min << ":";
+        cout << setw(2) << stx.tm_sec << endl;
+    }
+
+    void computeTime() {
+        struct tm st;
+        time_t tt;
+
+        st.tm_mday = 3; st.tm_mon = 3; st.tm_year = 118;   // 03.04.2018
+        st.tm_hour = 21; st.tm_min = 55; st.tm_sec = 30;    // 21:55:30
+        tt = mktime(&st);
+        cout << tt << endl;
+        output(&tt);
+
+        st.tm_sec += -10; st.tm_min += 190; st.tm_mday -=2;
+        tt = mktime(&st);   // erstellt eine Zeitangabe
+        cout << tt << endl;
+        output(&tt);
+    }
+
+    // include <cstdlib>
+    void randomSeed() {
+        cout << RAND_MAX << endl;
+        srand((unsigned int) time(0));
+        for(int i=1; i<=10; i++)
+            cout << rand() % 2 << " ";
+        cout << endl;
+    }
+
+    // #include <cmath>
+    void math() {
+        double angleDegree, angleRadian;
+        const double pi = 4 * atan(1.0);
+
+        for(angleDegree=80.0; angleDegree<90.5; angleDegree++) {
+            angleRadian = angleDegree * pi / 180.0;
+            cout << fixed;
+            cout << setw(5) << setprecision(1) << angleDegree;
+            cout << setw(12) << setprecision(3) << angleRadian;
+            // sin, cos, tan: Winkel im Bogenmaß = Radiant; Bogenmaß 360° = 2 PI
+            cout << setw(8) << setprecision(3) << sin(angleRadian);
+            cout << setw(8) << setprecision(3) << cos(angleRadian);
+            cout << scientific; // in wissenschaftliche Notation umschalten
+            cout << setw(12) << setprecision(2) << tan(angleRadian) << endl;
+        }
+
+        // Betrag
+        cout << "|-3.14| = " << fabs(-3.14) << endl;
+        cout << "|-3| = " << abs(-3) << endl;
+
+        // math. Funktionen: sqrt(), pow(), exp(), log(), ...
+    }
+
+    void os() {
+        string command = "tree /f";
+        system(command.c_str());
+    }
+
+    void main(int number, char *parameter[]) {
+        dateAndTime();
+        // timer();
+        computeTime();
+        randomSeed();
+        math();
+        os();
+
+        cout << "number: " << number << endl;
+        for(int i=0; i<number; i++) {
+            cout << i << ": " << parameter[i] << endl;
+        }
+    }
+}
+
+namespace section16 {
+
+    class vehicle {
+        private:
+            int horsepower;
+            double weight;
+            bool autonom;
+        public:
+            void assignValues(const int&, const double&, const bool&);
+            void drive();
+    };
+
+    void vehicle::assignValues(const int &a, const double &b, const bool &c) {
+        horsepower = a;
+        weight = b;
+        autonom = c;
+    }
+
+    void vehicle::drive() {
+        cout << horsepower << " " << weight << " " << autonom << endl;
+    }
+
+    void main() {
+        vehicle one;
+        one.assignValues(314, 1.453, true);
+        one.drive();
+
+        vehicle two;
+        two.assignValues(299, 1.201, false);
+        two.drive();
     }
 }
 
@@ -867,10 +1047,13 @@ void sectionn() {
     cout << "\n\n" <<endl;
 }
 
-int main() {
+// compile and link with g++ main.cpp -o main.exe
+int main(int number, char *parameter[]) {
     // section10::main();
     // section11::main();
     // section12::main();
     // section13::main();
-    section14::main();
+    // section14::main();
+    // section15::main(number, parameter);
+    section16::main();
 }
